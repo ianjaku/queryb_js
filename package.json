@@ -1,0 +1,32 @@
+{
+  "name": "queryb",
+  "version": "0.0.1",
+  "description": "Simple javascript query builder",
+  "main": "dist/qb.js",
+  "types": "dist/qb.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha --reporter spec",
+    "build_and_test": "tsc && mocha --reporter spec",
+    "watch": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://invacto@github.com/invacto/queryb_js.git"
+  },
+  "keywords": [
+    "querybuilder",
+    "query",
+    "builder"
+  ],
+  "author": "Invacto <ian@invacto.com> (https://kontrlpanel.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/invacto/queryb_js/issues"
+  },
+  "homepage": "https://github.com/invacto/queryb_js#readme",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2"
+  }
+}
