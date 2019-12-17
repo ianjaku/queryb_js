@@ -46,16 +46,38 @@ const {query, values} = qb.table("users").select(["id", "email"]).get();
 // values: []
 ```
 
-You can also add where clauses
+You can also add where clauses.
 
 ```js
 const {query, values} = qb.table("users")
                           .select()
-                          .where({
-                            company_name: "invacto"
-                          }).get();
+                          .where("company_name", "invacto").get();
 // query: SELECT * FROM users WHERE company_name=$1
 // values: ["invacto"]
+```
+
+By default where clauses use the "=" comparator.
+All supporter comparators are:
+
+- =
+- >
+- <
+- >=
+- <=
+- !=
+- IN
+- LIKE
+
+You can enter a comparator as the third parameter to a where function.
+
+
+```js
+const {query, values} = qb.table("users")
+                          .select()
+                          .where("id", 5, "<").get();
+
+// query: SELECT * FROM users WHERE id < $1
+// values: [5]
 ```
 
 You can add a limit to the result with the limit() function.

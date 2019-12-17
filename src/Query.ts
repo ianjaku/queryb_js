@@ -2,7 +2,7 @@ import helpers from "./helpers";
 
 interface Where {
   field: string;
-  comparator: "=" | ">" | "<" | "!=" | "IN";
+  comparator: string;
   value: any | any[];
 }
 
@@ -22,12 +22,14 @@ class Query {
     return '"$' + this.valueCount++ + '"';
   }
 
-  protected addWhere(field: string, value: any, comparator: "=" | ">" | "<" | "!=" | "IN" = "=") {
+  protected addWhere(field: string, value: any, comparator: "=" | ">" | "<" | "<=" | ">=" | "!=" | "IN" | "LIKE" = "=") {
+    const cleanComparator = comparator.replace(/[^=><!=INLKE]+/g, "");
+    
     field = helpers.clean(field);
 
     this.wheres.push({
       field,
-      comparator,
+      comparator: cleanComparator,
       value
     });
   }
