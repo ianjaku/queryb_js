@@ -134,7 +134,7 @@ const {query, values} = qb.table("users").delete().where("id", 1).get();
 // values: [1]
 ```
 
-As a safety procaution it is not possible to delete all data in a table using the regular methods.
+As a safety precaution it is not possible to delete all data in a table using the regular methods.
 If it is your intention to delete all data in a table, use the "all" method instead of the "get" method.
 
 ```js
