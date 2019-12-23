@@ -25,7 +25,7 @@ class SelectQuery extends Query {
     };
   }
 
-  public where(field: string, value: any, comparator: "=" | ">" | "<" | "!=" | "IN" = "=") {
+  public where(field: string, value: any, comparator: "=" | ">" | "<" | "<=" | ">=" | "!=" | "IN" | "LIKE" = "=") {
     this.addWhere(field, value, comparator);
     return this;
   }

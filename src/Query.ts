@@ -19,7 +19,8 @@ class Query {
 
   protected nextValue(value: any): string {
     this.values.push(value);
-    return '"$' + this.valueCount++ + '"';
+    return "$" + this.valueCount ++;
+    // return '"$' + this.valueCount++ + '"';
   }
 
   protected addWhere(field: string, value: any, comparator: "=" | ">" | "<" | "<=" | ">=" | "!=" | "IN" | "LIKE" = "=") {
