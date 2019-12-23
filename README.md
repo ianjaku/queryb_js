@@ -122,3 +122,23 @@ const {query, values} = qb.table("users").count().get();
 // query: SELECT COUNT(*) FROM users
 // values: []
 ```
+
+### Delete
+
+Use the delete and where methods to create a delete query
+
+```js
+const {query, values} = qb.table("users").delete().where("id", 1).get();
+
+// query: DELETE FROM users WHERE id = $1
+// values: [1]
+```
+
+As a safety procaution it is not possible to delete all data in a table using the regular methods.
+If it is your intention to delete all data in a table, use the "all" method instead of the "get" method.
+
+```js
+const {query, values} = qb.table("users").delete().all();
+
+// query: DELETE FROM users
+// values: []

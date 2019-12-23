@@ -1,6 +1,7 @@
 import SelectQuery from "./SelectQuery";
-import { clean } from "./helpers";
 import CountQuery from "./CountQuery";
+import DeleteQuery from "./DeleteQuery";
+import { clean } from "./helpers";
 import { Comparator, Condition } from "./WhereClause";
 
 export function table(tableName: string) {
@@ -15,6 +16,9 @@ export function table(tableName: string) {
     },
     count() {
       return new CountQuery(tableName);
+    },
+    delete() {
+      return new DeleteQuery(tableName);
     }
   }
 }

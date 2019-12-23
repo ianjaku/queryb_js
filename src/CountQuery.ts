@@ -2,7 +2,6 @@ import helpers from "./helpers";
 import Query from "./Query";
 
 class CountQuery extends Query {
-  private offsetValue: number | null = null;
 
   constructor(table: string) {
     super(table);

@@ -34,6 +34,10 @@ class WhereClause {
       first = false;
       let cleanValue = condition.value;
       if (Array.isArray(condition.value)) {
+        if (condition.value.length < 1) {
+          result += "FALSE";
+          continue;
+        }
         let newValue = "(";
         for (const item of condition.value) {
           if (newValue !== "(") {

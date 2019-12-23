@@ -1,6 +1,8 @@
 'use strict';
 
-const expect = require("chai").expect;
+const chai = require("chai");
+const expect = chai.expect;
+const assert = chai.assert;
 const qb = require("../dist/qb.js");
 
 describe('select query', () => {
@@ -17,6 +19,11 @@ describe('select query', () => {
     expect(query).to.equal(`SELECT * FROM users WHERE id = $1`);
     expect(values.length).to.equal(1);
     expect(values[0]).to.equal(1);
+  });
+  it('empty parameter list in WHERE IN clause will be replaced by FALSE', () => {
+    let {query, values} = qb.table("users").select().where("id", [], "IN").get();
+    expect(query).to.equal(`SELECT * FROM users WHERE FALSE`);
+    expect(values.length).to.equal(0);
   });
   it('should show multiple where clauses when multiple where clauses are added', () => {
     let {query, values} = qb.table("users").select().where("id", 1).where("first_name", "ian").get();
@@ -83,5 +90,24 @@ describe('count query', () => {
   it('should return a valid count query', () => {
     let {query, values} = qb.table("users").count().get();
     expect(query).to.equal(`SELECT COUNT(*) FROM users`);
+  });
+});
+
+describe('delete query', () => {
+  it('should return a valid delete query', () => {
+    const nr = Math.floor(Math.random() * 50) + 1;
+    let {query, values} = qb.table("users").delete().where("id", nr).get();
+    expect(query).to.equal(`DELETE FROM users WHERE id = $1`);
+    expect(values.length).to.equal(1);
+    expect(values[0]).to.equal(nr);
+  });
+  it('using all should delete all', () => {
+    let {query, values} = qb.table("users").delete().all();
+    expect(query).to.equal(`DELETE FROM users`);
+    expect(values.length).to.equal(0);
+  });
+  it('using get without a where should throw an error', () => {
+    let builder = qb.table("users").delete();
+    assert.throws(builder.get, Error);
   });
 });
