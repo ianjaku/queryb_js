@@ -53,6 +53,30 @@ describe('select query', () => {
     expect(query).to.equal(`SELECT * FROM users OFFSET $1`);
     expect(values[0]).to.equal(nr);
   });
+  it('or clause should add or clause', () => {
+    const ors = [
+      qb.where("first_name", "john"),
+      qb.where("last_name", "doe")
+    ];
+    let {query, values} = qb.table("users").select().or(...ors).get();
+    expect(query).to.equal(`SELECT * FROM users WHERE (first_name = $1 OR last_name = $2)`);
+  });
+  it('or clause follewed by another or clause should use an AND in the middle', () => {
+    const or1 = [
+      qb.where("last_name", "doe"),
+      qb.where("last_name", "dew")
+    ];
+    const or2 = [
+      qb.where("first_name", "john"),
+      qb.where("first_name", "joan"),
+    ];
+    let {query, values} = qb.table("users").select().or(...or1).or(...or2).get();
+    expect(query).to.equal(`SELECT * FROM users WHERE (last_name = $1 OR last_name = $2) AND (first_name = $3 OR first_name = $4)`);
+    expect(values[0]).to.equal("doe");
+    expect(values[1]).to.equal("dew");
+    expect(values[2]).to.equal("john");
+    expect(values[3]).to.equal("joan");
+  });
 });
 
 describe('count query', () => {

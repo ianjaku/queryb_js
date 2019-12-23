@@ -1,5 +1,6 @@
 import helpers from "./helpers";
 import Query from "./Query";
+import WhereClause, { Condition, Comparator } from "./WhereClause";
 
 class SelectQuery extends Query {
   private columns: string[];
@@ -25,8 +26,17 @@ class SelectQuery extends Query {
     };
   }
 
-  public where(field: string, value: any, comparator: "=" | ">" | "<" | "<=" | ">=" | "!=" | "IN" | "LIKE" = "=") {
-    this.addWhere(field, value, comparator);
+  public where(field: string, value: any, comparator: Comparator = "=") {
+    const whereClause = new WhereClause();
+    whereClause.addWhere(field, value, comparator);
+    this.wheres.push(whereClause);
+    return this;
+  }
+
+  public or(...conditions: Condition[]) {
+    const whereClause = new WhereClause();
+    conditions.forEach(c => whereClause.addWhere(c.field, c.value, c.comparator));
+    this.wheres.push(whereClause);
     return this;
   }
 

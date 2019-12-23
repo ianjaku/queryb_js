@@ -80,6 +80,19 @@ const {query, values} = qb.table("users")
 // values: [5]
 ```
 
+To add alternatives use the or(...conditions) function
+
+```js
+const {query, values} = qb.table("users")
+                          .select()
+                          .or(
+                            qb.where("id", 5, "="),
+                            qb.where("id", 6, "="))
+                          .get();
+// query: SELECT * FROM users WHERE (id = $1 OR id = $2)
+// values: [5, 6]
+```
+
 You can add a limit to the result with the limit() function.
 
 ```js

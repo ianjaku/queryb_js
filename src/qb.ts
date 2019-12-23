@@ -1,6 +1,7 @@
 import SelectQuery from "./SelectQuery";
 import { clean } from "./helpers";
 import CountQuery from "./CountQuery";
+import { Comparator, Condition } from "./WhereClause";
 
 export function table(tableName: string) {
   tableName = clean(tableName);
@@ -18,6 +19,11 @@ export function table(tableName: string) {
   }
 }
 
+export function where(field: string, value: any, comparator: Comparator = "="): Condition {
+  return { field, value, comparator };
+}
+
 export default {
-  table
+  table,
+  where
 }

@@ -1,16 +1,11 @@
 import helpers from "./helpers";
-
-interface Where {
-  field: string;
-  comparator: string;
-  value: any | any[];
-}
+import WhereClause from "./WhereClause";
 
 class Query {
   protected table: string;
   protected values: any[] = [];
   protected valueCount: number = 1;
-  private wheres: Where[] = [];
+  protected wheres: WhereClause[] = [];
   private resultLimit: number | null = null;
 
   constructor(table: string) {
@@ -23,18 +18,6 @@ class Query {
     // return '"$' + this.valueCount++ + '"';
   }
 
-  protected addWhere(field: string, value: any, comparator: "=" | ">" | "<" | "<=" | ">=" | "!=" | "IN" | "LIKE" = "=") {
-    const cleanComparator = comparator.replace(/[^=><!=INLKE]+/g, "");
-    
-    field = helpers.clean(field);
-
-    this.wheres.push({
-      field,
-      comparator: cleanComparator,
-      value
-    });
-  }
-
   protected compileWheres() {
     let result = "";
     let first = true;
@@ -45,20 +28,7 @@ class Query {
       } else {
         result += " AND ";
       }
-      let cleanValue = where.value;
-      if (Array.isArray(where.value)) {
-        let newValue = "(";
-        for (const item of where.value) {
-          if (newValue !== "(") {
-            newValue += ",";
-          }
-          newValue += this.nextValue(item);
-        }
-        cleanValue = newValue + ")";
-      } else {
-        cleanValue = this.nextValue(where.value);
-      }
-      result += where.field + " " + where.comparator + " " + cleanValue;
+      result += where.toString(this.nextValue.bind(this));
     }
     return result;
   }
