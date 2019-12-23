@@ -89,6 +89,7 @@ const {query, values} = qb.table("users")
                             qb.where("id", 5, "="),
                             qb.where("id", 6, "="))
                           .get();
+                          
 // query: SELECT * FROM users WHERE (id = $1 OR id = $2)
 // values: [5, 6]
 ```
