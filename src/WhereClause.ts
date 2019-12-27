@@ -4,6 +4,7 @@ export interface Condition {
   field: string;
   comparator: string;
   value: any | any[];
+  ignoreCase?: boolean;
 }
 
 export type Comparator = "=" | ">" | "<" | "<=" | ">=" | "!=" | "IN" | "LIKE";
@@ -11,7 +12,7 @@ export type Comparator = "=" | ">" | "<" | "<=" | ">=" | "!=" | "IN" | "LIKE";
 class WhereClause {
   private conditions: Condition[] = []; // OR CONDITIONS
 
-  public addWhere(field: string, value: any, comparator: string = "=") {
+  public addWhere(field: string, value: any, comparator: string = "=", ignoreCase: boolean = false) {
     const cleanComparator = comparator.replace(/[^=><!=INLKE]+/g, "");
     
     field = helpers.clean(field);
@@ -19,7 +20,8 @@ class WhereClause {
     this.conditions.push({
       field,
       comparator: cleanComparator,
-      value
+      value,
+      ignoreCase
     });
   }
 
@@ -43,11 +45,19 @@ class WhereClause {
           if (newValue !== "(") {
             newValue += ",";
           }
-          newValue += nextValueMethod(item);
+          if (condition.ignoreCase) {
+            newValue += "LOWER(" + nextValueMethod(item) + ")";
+          } else {
+            newValue += nextValueMethod(item);
+          }
         }
         cleanValue = newValue + ")";
       } else {
-        cleanValue = nextValueMethod(condition.value);
+        if (condition.ignoreCase) {
+          cleanValue = "LOWER(" + nextValueMethod(condition.value) + ")";
+        } else {
+          cleanValue = nextValueMethod(condition.value);
+        }
       }
       result += condition.field + " " + condition.comparator + " " + cleanValue;
     }

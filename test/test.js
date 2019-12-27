@@ -40,6 +40,10 @@ describe('select query', () => {
     let {query, values} = qb.table("users").select().where("id", [1, 2], "IN").get();
     expect(query).to.equal(`SELECT * FROM users WHERE id IN ($1,$2)`);
   });
+  it('should use the LOWER function when ignoreCase is true', () => {
+    let {query, values} = qb.table("users").select().where("id", 1, "=", true).get();
+    expect(query).to.equal(`SELECT * FROM users WHERE id = LOWER($1)`);
+  });
   it('should add a limit when given', () => {
     const nr = Math.floor(Math.random() * 50) + 1;
     let {query, values} = qb.table("users").select().limit(nr).get();
@@ -109,5 +113,9 @@ describe('delete query', () => {
   it('using get without a where should throw an error', () => {
     let builder = qb.table("users").delete();
     assert.throws(builder.get, Error);
+  });
+  it('should use the LOWER function when ignoreCase is true', () => {
+    let {query, values} = qb.table("users").delete().where("id", 1, "=", true).get();
+    expect(query).to.equal(`DELETE FROM users WHERE id = LOWER($1)`);
   });
 });

@@ -26,9 +26,9 @@ class SelectQuery extends Query {
     };
   }
 
-  public where(field: string, value: any, comparator: Comparator = "=") {
+  public where(field: string, value: any, comparator: Comparator = "=", ignoreCase: boolean = false) {
     const whereClause = new WhereClause();
-    whereClause.addWhere(field, value, comparator);
+    whereClause.addWhere(field, value, comparator, ignoreCase);
     this.wheres.push(whereClause);
     return this;
   }

@@ -94,6 +94,18 @@ const {query, values} = qb.table("users")
 // values: [5, 6]
 ```
 
+You can make a where clause case insensitive by using the fourth parameter of the where clause
+
+```js
+const {query, values} = qb.table("users")
+                          .select()
+                          .where("slug", "hello_world", "=", true)
+                          .get();
+                          
+// query: SELECT * FROM users WHERE slug = LOWER($1)
+// values: ["hello_world"]
+```
+
 You can add a limit to the result with the limit() function.
 
 ```js
@@ -134,6 +146,18 @@ const {query, values} = qb.table("users").delete().where("id", 1).get();
 // values: [1]
 ```
 
+You can make a where clause case insensitive by using the fourth parameter of the where clause
+
+```js
+const {query, values} = qb.table("users")
+                          .select()
+                          .where("slug", "hello_world", "=", true)
+                          .get();
+                          
+// query: SELECT * FROM users WHERE slug = LOWER($1)
+// values: ["hello_world"]
+```
+
 As a safety precaution it is not possible to delete all data in a table using the regular methods.
 If it is your intention to delete all data in a table, use the "all" method instead of the "get" method.
 
@@ -142,3 +166,4 @@ const {query, values} = qb.table("users").delete().all();
 
 // query: DELETE FROM users
 // values: []
+```
