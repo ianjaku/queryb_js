@@ -88,6 +88,26 @@ describe('select query', () => {
     expect(values[2]).to.equal("john");
     expect(values[3]).to.equal("joan");
   });
+  it('ignoreCase with or clause should add LOWER to the right fields', () => {
+    const ors = [
+      qb.where("first_name", "john", "=", true),
+      qb.where("first_name", "joan", "=", true)
+    ];
+    let {query, values} = qb.table("users").select().or(...ors).get();
+    expect(query).to.equal(`SELECT * FROM users WHERE (LOWER(first_name) = LOWER($1) OR LOWER(first_name) = LOWER($2))`);
+    expect(values[0]).to.equal("john");
+    expect(values[1]).to.equal("joan");
+  });
+  it('array as or parameter should be iterated over', () => {
+    const ors = [
+      qb.where("first_name", "john"),
+      qb.where("first_name", "joan")
+    ];
+    let {query, values} = qb.table("users").select().or(ors).get();
+    expect(query).to.equal(`SELECT * FROM users WHERE (first_name = $1 OR first_name = $2)`);
+    expect(values[0]).to.equal("john");
+    expect(values[1]).to.equal("joan");
+  });
 });
 
 describe('count query', () => {

@@ -15,6 +15,7 @@ class WhereClause {
   public addWhere(field: string, value: any, comparator: string = "=", ignoreCase: boolean = false) {
     const cleanComparator = comparator.replace(/[^=><!=INLKE]+/g, "");
     
+    console.log("Field:", field);
     field = helpers.clean(field);
 
     this.conditions.push({

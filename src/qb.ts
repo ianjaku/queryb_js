@@ -23,8 +23,8 @@ export function table(tableName: string) {
   }
 }
 
-export function where(field: string, value: any, comparator: Comparator = "="): Condition {
-  return { field, value, comparator };
+export function where(field: string, value: any, comparator: Comparator = "=", ignoreCase: boolean = false): Condition {
+  return { field, value, comparator, ignoreCase };
 }
 
 export default {

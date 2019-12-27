@@ -35,7 +35,13 @@ class SelectQuery extends Query {
 
   public or(...conditions: Condition[]) {
     const whereClause = new WhereClause();
-    conditions.forEach(c => whereClause.addWhere(c.field, c.value, c.comparator));
+    conditions.forEach(c => {
+      if (Array.isArray(c)) {
+        c.forEach(c => whereClause.addWhere(c.field, c.value, c.comparator, c.ignoreCase));
+      } else {
+        whereClause.addWhere(c.field, c.value, c.comparator, c.ignoreCase)
+      }
+    });
     this.wheres.push(whereClause);
     return this;
   }
