@@ -42,7 +42,7 @@ describe('select query', () => {
   });
   it('should use the LOWER function when ignoreCase is true', () => {
     let {query, values} = qb.table("users").select().where("id", 1, "=", true).get();
-    expect(query).to.equal(`SELECT * FROM users WHERE id = LOWER($1)`);
+    expect(query).to.equal(`SELECT * FROM users WHERE LOWER(id) = LOWER($1)`);
   });
   it('should add a limit when given', () => {
     const nr = Math.floor(Math.random() * 50) + 1;
@@ -116,6 +116,6 @@ describe('delete query', () => {
   });
   it('should use the LOWER function when ignoreCase is true', () => {
     let {query, values} = qb.table("users").delete().where("id", 1, "=", true).get();
-    expect(query).to.equal(`DELETE FROM users WHERE id = LOWER($1)`);
+    expect(query).to.equal(`DELETE FROM users WHERE LOWER(id) = LOWER($1)`);
   });
 });

@@ -59,7 +59,12 @@ class WhereClause {
           cleanValue = nextValueMethod(condition.value);
         }
       }
-      result += condition.field + " " + condition.comparator + " " + cleanValue;
+      if (condition.ignoreCase) {
+        result += "LOWER(" + condition.field + ")";
+      } else {
+        result += condition.field;
+      }
+      result += " " + condition.comparator + " " + cleanValue;
     }
     if (this.conditions.length > 1) result += ")";
     return result;
