@@ -167,3 +167,27 @@ const {query, values} = qb.table("users").delete().all();
 // query: DELETE FROM users
 // values: []
 ```
+
+### Insert
+
+There are 2 ways to add key/value pairs to an insert query.
+
+1. By using the set(key, value) method
+
+```js
+const {query, values} = qb.table("users").insert().set("id", 1).set("name", "john").get()
+
+// query: INSERT INTO users (id,name) VALUES ($1,$2)
+// values: [1, "john"]
+```
+
+2. By using the obj(object) method
+
+```js
+const {query, values} = qb.table("users").insert().obj({id: 1, name: "john").get()
+
+// query: INSERT INTO users (id,name) VALUES ($1,$2)
+// values: [1, "john"]
+```
+
+As many or as few key/value paris can be added

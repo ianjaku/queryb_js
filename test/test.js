@@ -159,3 +159,34 @@ describe('delete query', () => {
     expect(query).to.equal(`DELETE FROM users WHERE LOWER(id) = LOWER($1)`);
   });
 });
+
+describe('insert query', () => {
+  it('using a single set', () => {
+    let {query, values} = qb.table("users").insert().set("id", 1).get();
+    expect(query).to.equal(`INSERT INTO users (id) VALUES ($1)`);
+    expect(values.length).to.equal(1);
+    expect(values[0]).to.equal(1);
+  });
+  it('using multiple set calls', () => {
+    let {query, values} = qb.table("users").insert().set("id", 1).set("name", "john").get();
+    expect(query).to.equal(`INSERT INTO users (id,name) VALUES ($1,$2)`);
+    expect(values.length).to.equal(2);
+    expect(values[0]).to.equal(1);
+    expect(values[1]).to.equal("john");
+  });
+  it('using a single obj call', () => {
+    let {query, values} = qb.table("users").insert().obj({ id: 1, name: "john"}).get();
+    expect(query).to.equal(`INSERT INTO users (id,name) VALUES ($1,$2)`);
+    expect(values.length).to.equal(2);
+    expect(values[0]).to.equal(1);
+    expect(values[1]).to.equal("john");
+  });
+  it('using multiple obj calls', () => {
+    let {query, values} = qb.table("users").insert().obj({ id: 1, name: "john"}).obj({ company: "mcshit" }).get();
+    expect(query).to.equal(`INSERT INTO users (id,name,company) VALUES ($1,$2,$3)`);
+    expect(values.length).to.equal(3);
+    expect(values[0]).to.equal(1);
+    expect(values[1]).to.equal("john");
+    expect(values[2]).to.equal("mcshit");
+  });
+});

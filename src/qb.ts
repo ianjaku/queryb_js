@@ -3,6 +3,7 @@ import CountQuery from "./CountQuery";
 import DeleteQuery from "./DeleteQuery";
 import { clean } from "./helpers";
 import { Comparator, Condition } from "./WhereClause";
+import InsertQuery from "./InsertQuery";
 
 export function table(tableName: string) {
   tableName = clean(tableName);
@@ -19,6 +20,9 @@ export function table(tableName: string) {
     },
     delete() {
       return new DeleteQuery(tableName);
+    },
+    insert() {
+      return new InsertQuery(tableName);
     }
   }
 }
