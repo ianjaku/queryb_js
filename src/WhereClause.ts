@@ -15,7 +15,6 @@ class WhereClause {
   public addWhere(field: string, value: any, comparator: string = "=", ignoreCase: boolean = false) {
     const cleanComparator = comparator.replace(/[^=><!=INLKE]+/g, "");
     
-    console.log("Field:", field);
     field = helpers.clean(field);
 
     this.conditions.push({
@@ -36,13 +35,24 @@ class WhereClause {
       }
       first = false;
       let cleanValue = condition.value;
+      if (condition.value == null) {
+        if (condition.comparator === "=") {
+          result += condition.field + " IS NULL";
+        } else if (condition.comparator === "!=") {
+          result += condition.field + " IS NOT NULL";
+        } else {
+          result += "FALSE"
+        }
+        continue;
+      }
       if (Array.isArray(condition.value)) {
-        if (condition.value.length < 1) {
+        if (condition.value.length < 1 || condition.value.filter(v => v != null).length < 1) {
           result += "FALSE";
           continue;
         }
         let newValue = "(";
         for (const item of condition.value) {
+          if (item == null) continue;
           if (newValue !== "(") {
             newValue += ",";
           }

@@ -25,6 +25,26 @@ describe('select query', () => {
     expect(query).to.equal(`SELECT * FROM users WHERE FALSE`);
     expect(values.length).to.equal(0);
   });
+  it('parameter list with only null in WHERE IN clause will be replaced by FALSE', () => {
+    let {query, values} = qb.table("users").select().where("id", [null], "IN").get();
+    expect(query).to.equal(`SELECT * FROM users WHERE FALSE`);
+    expect(values.length).to.equal(0);
+  });
+  it('where = clause with null value will be replaced by IS NULL', () => {
+    let {query, values} = qb.table("users").select().where("id", null, "=").get();
+    expect(query).to.equal(`SELECT * FROM users WHERE id IS NULL`);
+    expect(values.length).to.equal(0);
+  });
+  it('where != clause with null value will be replaced by IS NOT NULL', () => {
+    let {query, values} = qb.table("users").select().where("id", null, "!=").get();
+    expect(query).to.equal(`SELECT * FROM users WHERE id IS NOT NULL`);
+    expect(values.length).to.equal(0);
+  });
+  it('where any but = and != clause with null value will be replaced by FALSE', () => {
+    let {query, values} = qb.table("users").select().where("id", null, ">").get();
+    expect(query).to.equal(`SELECT * FROM users WHERE FALSE`);
+    expect(values.length).to.equal(0);
+  });
   it('should show multiple where clauses when multiple where clauses are added', () => {
     let {query, values} = qb.table("users").select().where("id", 1).where("first_name", "ian").get();
     expect(query).to.equal(`SELECT * FROM users WHERE id = $1 AND first_name = $2`);
