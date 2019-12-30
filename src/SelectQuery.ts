@@ -15,14 +15,15 @@ class SelectQuery extends Query {
   public get() {
     let query = `SELECT ${this.columns.join(",")} FROM ${this.table}`;
     query += this.compileWheres();
+
+    if (this.orderByValues.length > 0) {
+      query += " ORDER BY " + this.orderByValues.join(",");
+    }
+    
     query += this.compileLimit();
 
     if (this.offsetValue != null) {
       query += " OFFSET " + this.nextValue(this.offsetValue);
-    }
-
-    if (this.orderByValues.length > 0) {
-      query += " ORDER BY " + this.orderByValues.join(",");
     }
 
     return {

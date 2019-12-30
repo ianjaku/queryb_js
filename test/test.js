@@ -140,6 +140,10 @@ describe('select query', () => {
     let {query, values} = qb.table("users").select().orderBy("id DESC", "username").get();
     expect(query).to.equal(`SELECT * FROM users ORDER BY id DESC,username`);
   });
+  it('order by should be printed before OFFSET', () => {
+    let {query, values} = qb.table("users").select().offset(0).orderBy("id").get();
+    expect(query).to.equal(`SELECT * FROM users ORDER BY id OFFSET $1`);
+  });
 });
 
 describe('count query', () => {
