@@ -5,6 +5,7 @@ import WhereClause, { Condition, Comparator } from "./WhereClause";
 class SelectQuery extends Query {
   private columns: string[];
   private offsetValue: number | null = null;
+  private orderByValues: string[] = [];
 
   constructor(table: string, columns: string[]) {
     super(table);
@@ -18,6 +19,10 @@ class SelectQuery extends Query {
 
     if (this.offsetValue != null) {
       query += " OFFSET " + this.nextValue(this.offsetValue);
+    }
+
+    if (this.orderByValues.length > 0) {
+      query += " ORDER BY " + this.orderByValues.join(",");
     }
 
     return {
@@ -53,6 +58,12 @@ class SelectQuery extends Query {
 
   public offset(offset: number) {
     this.offsetValue = offset;
+    return this;
+  }
+
+  public orderBy(...columnNames: string[]) {
+    const cleanColumnNames = columnNames.map(helpers.clean);
+    this.orderByValues.push(...cleanColumnNames);
     return this;
   }
 

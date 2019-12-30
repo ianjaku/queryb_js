@@ -128,6 +128,18 @@ describe('select query', () => {
     expect(values[0]).to.equal("john");
     expect(values[1]).to.equal("joan");
   });
+  it('should correctly display a single order by value', () => {
+    let {query, values} = qb.table("users").select().orderBy("id").get();
+    expect(query).to.equal(`SELECT * FROM users ORDER BY id`);
+  });
+  it('should correctly display multiple order by values', () => {
+    let {query, values} = qb.table("users").select().orderBy("id", "username").get();
+    expect(query).to.equal(`SELECT * FROM users ORDER BY id,username`);
+  });
+  it('should correctly display multiple order by values and a DESC', () => {
+    let {query, values} = qb.table("users").select().orderBy("id DESC", "username").get();
+    expect(query).to.equal(`SELECT * FROM users ORDER BY id DESC,username`);
+  });
 });
 
 describe('count query', () => {
