@@ -66,7 +66,9 @@ All supporter comparators are:
 - <=
 - !=
 - IN
+- NOT IN
 - LIKE
+- NOT LIKE
 
 You can enter a comparator as the third parameter to a where function.
 

@@ -7,7 +7,7 @@ export interface Condition {
   ignoreCase?: boolean;
 }
 
-export type Comparator = "=" | ">" | "<" | "<=" | ">=" | "!=" | "IN" | "LIKE";
+export type Comparator = "=" | ">" | "<" | "<=" | ">=" | "!=" | "NOT IN" | "IN" | "NOT LIKE" | "LIKE";
 
 class WhereClause {
   private conditions: Condition[] = []; // OR CONDITIONS
