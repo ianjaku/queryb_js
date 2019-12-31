@@ -151,6 +151,28 @@ describe('count query', () => {
     let {query, values} = qb.table("users").count().get();
     expect(query).to.equal(`SELECT COUNT(*) FROM users`);
   });
+  it('where = clause with null value will be replaced by IS NULL', () => {
+    let {query, values} = qb.table("users").count().where("id", null, "=").get();
+    expect(query).to.equal(`SELECT COUNT(*) FROM users WHERE id IS NULL`);
+    expect(values.length).to.equal(0);
+  });
+  it('where != clause with null value will be replaced by IS NOT NULL', () => {
+    let {query, values} = qb.table("users").count().where("id", null, "!=").get();
+    expect(query).to.equal(`SELECT COUNT(*) FROM users WHERE id IS NOT NULL`);
+    expect(values.length).to.equal(0);
+  });
+  it('where any but = and != clause with null value will be replaced by FALSE', () => {
+    let {query, values} = qb.table("users").count().where("id", null, ">").get();
+    expect(query).to.equal(`SELECT COUNT(*) FROM users WHERE FALSE`);
+    expect(values.length).to.equal(0);
+  });
+  it('should show multiple where clauses when multiple where clauses are added', () => {
+    let {query, values} = qb.table("users").count().where("id", 1).where("first_name", "ian").get();
+    expect(query).to.equal(`SELECT COUNT(*) FROM users WHERE id = $1 AND first_name = $2`);
+    expect(values.length).to.equal(2);
+    expect(values[0]).to.equal(1);
+    expect(values[1]).to.equal("ian");
+  });
 });
 
 describe('delete query', () => {
