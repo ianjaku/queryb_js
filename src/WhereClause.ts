@@ -54,6 +54,7 @@ class WhereClause {
   }
 
   public toString() {
+    console.log("Entries:", this.entries);
     if (this.entries.length < 1) return "";
 
     let result = "";
@@ -63,12 +64,11 @@ class WhereClause {
       }
       result += this.resolveEntry(entry);
     }
-    console.log("Where result:", result);
     return " WHERE " + result;
   }
 
-  public hasWheres() {
-    return this.entries.length > 0;
+  public isEmpty() {
+    return this.entries.length < 1;
   }
 
   private resolveEntry(entry: Entry) {

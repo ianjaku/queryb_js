@@ -9,7 +9,7 @@ class DeleteQuery extends Query {
   }
 
   public get() {
-    if (!this.whereClause.hasWheres()) {
+    if (this.whereClause.isEmpty()) {
       throw Error("[QueryB] Watch out! You are deleting everything in the table. If this is what you want to do, use all() instead of get().");
     }
     let query = `DELETE FROM ${this.table}`;

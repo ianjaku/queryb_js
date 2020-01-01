@@ -129,6 +129,20 @@ describe('select query', () => {
     expect(values[2]).to.equal("john");
     expect(values[3]).to.equal("joan");
   });
+  it('or clause follewed by another or clause should use an AND in the middle', () => {
+    let {query, values} = 
+      qb.table("users")
+        .select()
+        .or(
+          qb.and(
+            qb.where("id", 1)
+          )
+        )
+        .get();
+
+    expect(query).to.equal(`SELECT * FROM users WHERE ((id = $1))`);
+    expect(values[0]).to.equal(1);
+  });
   it('ignoreCase with or clause should add LOWER to the right fields', () => {
     const ors = [
       qb.where("first_name", "john", "=", true),
@@ -206,6 +220,20 @@ describe('delete query', () => {
   it('should use the LOWER function when ignoreCase is true', () => {
     let {query, values} = qb.table("users").delete().where("id", 1, "=", true).get();
     expect(query).to.equal(`DELETE FROM users WHERE LOWER(id) = LOWER($1)`);
+  });
+  it('nested entries with a single value should still compile correctly', () => {
+    let {query, values} = 
+      qb.table("users")
+        .delete()
+        .or(
+          qb.and(
+            qb.where("id", 1)
+          )
+        )
+        .get();
+
+    expect(query).to.equal(`DELETE FROM users WHERE ((id = $1))`);
+    expect(values[0]).to.equal(1);
   });
 });
 
