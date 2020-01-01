@@ -92,6 +92,27 @@ describe('select query', () => {
     let {query, values} = qb.table("users").select().or(...ors).get();
     expect(query).to.equal(`SELECT * FROM users WHERE (first_name = $1 OR last_name = $2)`);
   });
+  it('or clause with nested add clause', () => {
+    let {query, values} = 
+      qb.table("users")
+        .select()
+        .or(
+          qb.and(
+            qb.where("first_name", "john"),
+            qb.where("last_name", "doe")
+          ),
+          qb.and(
+            qb.where("first_name", "jona"),
+            qb.where("last_name", "dona")
+          )
+        )
+        .get();
+    expect(query).to.equal(`SELECT * FROM users WHERE ((first_name = $1 AND last_name = $2) OR (first_name = $3 AND last_name = $4))`);
+    expect(values[0]).to.equal("john");
+    expect(values[1]).to.equal("doe");
+    expect(values[2]).to.equal("jona");
+    expect(values[3]).to.equal("dona");
+  });
   it('or clause follewed by another or clause should use an AND in the middle', () => {
     const or1 = [
       qb.where("last_name", "doe"),
@@ -115,16 +136,6 @@ describe('select query', () => {
     ];
     let {query, values} = qb.table("users").select().or(...ors).get();
     expect(query).to.equal(`SELECT * FROM users WHERE (LOWER(first_name) = LOWER($1) OR LOWER(first_name) = LOWER($2))`);
-    expect(values[0]).to.equal("john");
-    expect(values[1]).to.equal("joan");
-  });
-  it('array as or parameter should be iterated over', () => {
-    const ors = [
-      qb.where("first_name", "john"),
-      qb.where("first_name", "joan")
-    ];
-    let {query, values} = qb.table("users").select().or(ors).get();
-    expect(query).to.equal(`SELECT * FROM users WHERE (first_name = $1 OR first_name = $2)`);
     expect(values[0]).to.equal("john");
     expect(values[1]).to.equal("joan");
   });

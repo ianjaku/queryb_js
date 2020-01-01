@@ -60,9 +60,9 @@ By default where clauses use the "=" comparator.
 All supporter comparators are:
 
 - =
-- >
+- \>
 - <
-- >=
+- \>=
 - <=
 - !=
 - IN
@@ -94,6 +94,26 @@ const {query, values} = qb.table("users")
                           
 // query: SELECT * FROM users WHERE (id = $1 OR id = $2)
 // values: [5, 6]
+```
+
+You can also chain ors & ands like so
+
+```js
+const {query, values} = qb.table("users")
+                          .select()
+                          .or(
+                            qb.and(
+                              qb.where("first_name", "john"),
+                              qb.where("last_name", "doe")
+                            ),
+                            qb.and(
+                              qb.where("first_name", "jona"),
+                              qb.where("last_name", "dona")
+                            )
+                          )
+                          .get();
+// query: SELECT * FROM users WHERE ((first_name = $1 AND last_name = $2) OR (first_name = $3 AND last_name = $4))
+// values: ["john", "doe", "jona", "dona"]
 ```
 
 You can make a where clause case insensitive by using the fourth parameter of the where clause

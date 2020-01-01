@@ -5,32 +5,21 @@ class Query {
   protected table: string;
   protected values: any[] = [];
   protected valueCount: number = 1;
-  protected wheres: WhereClause[] = [];
+  protected whereClause: WhereClause;
   private resultLimit: number | null = null;
 
   constructor(table: string) {
     this.table = helpers.clean(table);
+    this.whereClause = new WhereClause(this.nextValue.bind(this));
   }
 
   protected nextValue(value: any): string {
     this.values.push(value);
     return "$" + this.valueCount ++;
-    // return '"$' + this.valueCount++ + '"';
   }
 
   protected compileWheres() {
-    let result = "";
-    let first = true;
-    for (const where of this.wheres) {
-      if (first) {
-        result += " WHERE ";
-        first = false;
-      } else {
-        result += " AND ";
-      }
-      result += where.toString(this.nextValue.bind(this));
-    }
-    return result;
+    return this.whereClause.toString();
   }
 
   protected setLimit(limit: number) {

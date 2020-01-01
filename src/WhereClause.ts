@@ -9,76 +9,122 @@ export interface Condition {
 
 export type Comparator = "=" | ">" | "<" | "<=" | ">=" | "!=" | "NOT IN" | "IN" | "NOT LIKE" | "LIKE";
 
+export interface Entry {
+  type: "AND" | "OR" | "CONDITION";
+  condition?: Condition;
+  children?: Entry[];
+}
+
+/**
+ * 
+ * qb.table("user")
+ *   .or(
+ *     qb.and(
+ *       qb.where("id", 1),
+ *       qb.where("slug", "_slug_")
+ *     )
+ *   )
+ * 
+ */
+
+
 class WhereClause {
-  private conditions: Condition[] = []; // OR CONDITIONS
+  private entries: Entry[] = [];
+  private nextValueMethod: (value: any) => string;
+
+  constructor(nextValueMethod: (value: any) => string) {
+    this.nextValueMethod = nextValueMethod;
+  }
 
   public addWhere(field: string, value: any, comparator: string = "=", ignoreCase: boolean = false) {
     const cleanComparator = comparator.replace(/[^=><!=INLKE]+/g, "");
-    
     field = helpers.clean(field);
 
-    this.conditions.push({
+    const condition = {
       field,
       comparator: cleanComparator,
       value,
       ignoreCase
-    });
+    };
+    this.entries.push({ type: "CONDITION", condition });
   }
 
-  public toString(nextValueMethod: (value: any) => string) {
+  public addEntry(entry: Entry) {
+    this.entries.push(entry);
+  }
+
+  public toString() {
+    if (this.entries.length < 1) return "";
+
     let result = "";
-    if (this.conditions.length > 1) result += "(";
-    let first = true;
-    for (const condition of this.conditions) {
-      if (!first) {
-        result += " OR ";
+    for (const entry of this.entries) {
+      if (result != "") {
+        result += " AND "
       }
-      first = false;
-      let cleanValue = condition.value;
-      if (condition.value == null) {
-        if (condition.comparator === "=") {
-          result += condition.field + " IS NULL";
-        } else if (condition.comparator === "!=") {
-          result += condition.field + " IS NOT NULL";
-        } else {
-          result += "FALSE"
-        }
-        continue;
-      }
-      if (Array.isArray(condition.value)) {
-        if (condition.value.length < 1 || condition.value.filter(v => v != null).length < 1) {
-          result += "FALSE";
-          continue;
-        }
-        let newValue = "(";
-        for (const item of condition.value) {
-          if (item == null) continue;
-          if (newValue !== "(") {
-            newValue += ",";
-          }
-          if (condition.ignoreCase) {
-            newValue += "LOWER(" + nextValueMethod(item) + ")";
-          } else {
-            newValue += nextValueMethod(item);
-          }
-        }
-        cleanValue = newValue + ")";
-      } else {
-        if (condition.ignoreCase) {
-          cleanValue = "LOWER(" + nextValueMethod(condition.value) + ")";
-        } else {
-          cleanValue = nextValueMethod(condition.value);
-        }
-      }
-      if (condition.ignoreCase) {
-        result += "LOWER(" + condition.field + ")";
-      } else {
-        result += condition.field;
-      }
-      result += " " + condition.comparator + " " + cleanValue;
+      result += this.resolveEntry(entry);
     }
-    if (this.conditions.length > 1) result += ")";
-    return result;
+    console.log("Where result:", result);
+    return " WHERE " + result;
+  }
+
+  public hasWheres() {
+    return this.entries.length > 0;
+  }
+
+  private resolveEntry(entry: Entry) {
+    if (entry.type === "CONDITION") {
+      if (entry.condition == null) throw Error("A condition entry should always carry a condition key");
+      const conditionString = this.resolveCondition(entry.condition);
+      return conditionString;
+    } else if (entry.type === "AND" || entry.type === "OR") {
+      if (entry.children == null) throw Error("An AND/OR entry should always carry a children array");
+      const children = entry.children;
+      let andResult = "";
+      for (const child of children) {
+        if (andResult != "") {
+          andResult += " " + entry.type + " ";
+        }
+        andResult += this.resolveEntry(child);
+      }
+      return "(" + andResult + ")";
+    }
+  }
+
+  private resolveCondition(condition: Condition) {
+    let value = condition.value;
+    let cleanValue = "";
+
+    if (Array.isArray(value)) {
+      value = value.filter(v => v != null);
+      if (value.length < 1 && condition.comparator === "IN") {
+        return "FALSE";
+      }
+      if (value.length < 1 && condition.comparator === "NOT IN") {
+        return "TRUE";
+      }
+      let cleanValues = value.map(this.nextValueMethod);
+      if (condition.ignoreCase) {
+        cleanValues = cleanValues.map((v: string) => `LOWER(${v})`);
+      }
+      cleanValue = "(" + cleanValues.join(",") + ")";
+    } else {
+      if (value == null && condition.comparator === "=") {
+        return condition.field + " IS NULL";
+      }
+      if (value == null && condition.comparator === "!=") {
+        return condition.field + " IS NOT NULL";
+      }
+      if (value == null) return "FALSE";
+      cleanValue = this.nextValueMethod(condition.value);
+    }
+
+    if (condition.ignoreCase && !Array.isArray(value)) {
+      return `LOWER(${condition.field}) ${condition.comparator} LOWER(${cleanValue})`
+    } else if (condition.ignoreCase) {
+      return `LOWER(${condition.field}) ${condition.comparator} ${cleanValue}`
+    }
+
+    return condition.field + " " + condition.comparator + " " + cleanValue;
   }
 
 }
