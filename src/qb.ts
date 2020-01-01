@@ -48,5 +48,7 @@ export function or(...entries: Entry[]): Entry {
 
 export default {
   table,
-  where
+  where,
+  and,
+  or
 }
