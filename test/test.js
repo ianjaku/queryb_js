@@ -267,3 +267,43 @@ describe('insert query', () => {
     expect(values[2]).to.equal("mcshit");
   });
 });
+
+describe("update", () => {
+  it("should update a single value", () => {
+    let {query, values} = qb.table("users").update().set("id", 1).get();
+    expect(query).to.equal(`UPDATE users SET id = $1`);
+    expect(values[0]).to.equal(1);
+  });
+  it("should update multiple values", () => {
+    let {query, values} = qb.table("users").update().set("id", 1).set("first_name", "john").get();
+    expect(query).to.equal(`UPDATE users SET id = $1, first_name = $2`);
+    expect(values[0]).to.equal(1);
+    expect(values[1]).to.equal("john");
+  });
+  it("should add a single where clause", () => {
+    let {query, values} = qb.table("users")
+                            .update()
+                            .set("id", 1)
+                            .set("first_name", "john")
+                            .where("id", 20)
+                            .get();
+    expect(query).to.equal(`UPDATE users SET id = $1, first_name = $2 WHERE id = $3`);
+    expect(values[0]).to.equal(1);
+    expect(values[1]).to.equal("john");
+    expect(values[2]).to.equal(20);
+  });
+  it("should add multiple where clauses", () => {
+    let {query, values} = qb.table("users")
+                            .update()
+                            .set("id", 1)
+                            .set("first_name", "john")
+                            .where("id", 20)
+                            .where("last_name", "doe")
+                            .get();
+    expect(query).to.equal(`UPDATE users SET id = $1, first_name = $2 WHERE id = $3 AND last_name = $4`);
+    expect(values[0]).to.equal(1);
+    expect(values[1]).to.equal("john");
+    expect(values[2]).to.equal(20);
+    expect(values[3]).to.equal("doe");
+  })
+});

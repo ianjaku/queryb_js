@@ -4,6 +4,7 @@ import DeleteQuery from "./DeleteQuery";
 import { clean } from "./helpers";
 import InsertQuery from "./InsertQuery";
 import { Entry, Comparator } from "./WhereClause";
+import UpdateQuery from "./UpdateQuery";
 
 export function table(tableName: string) {
   tableName = clean(tableName);
@@ -23,6 +24,9 @@ export function table(tableName: string) {
     },
     insert() {
       return new InsertQuery(tableName);
+    },
+    update() {
+      return new UpdateQuery(tableName);
     }
   }
 }
