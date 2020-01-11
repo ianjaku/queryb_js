@@ -266,6 +266,16 @@ describe('insert query', () => {
     expect(values[1]).to.equal("john");
     expect(values[2]).to.equal("mcshit");
   });
+  it('using a returns should add a returns', () => {
+    let {query, values} = qb.table("users").insert().obj({ first_name: "john" }).returning("id").get();
+    expect(query).to.equal(`INSERT INTO users (first_name) VALUES ($1) RETURNING id`)
+    expect(values[0]).to.equal("john");
+  });
+  it('using multiple returns should add multiple returns', () => {
+    let {query, values} = qb.table("users").insert().obj({ first_name: "john" }).returning("id", "first_name").get();
+    expect(query).to.equal(`INSERT INTO users (first_name) VALUES ($1) RETURNING id, first_name`)
+    expect(values[0]).to.equal("john");
+  });
 });
 
 describe("update", () => {

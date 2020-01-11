@@ -3,6 +3,7 @@ import Query from "./Query";
 
 class InsertQuery extends Query {
   private insertValues: any = {};
+  private returningValues: string[] = [];
 
   constructor(table: string) {
     super(table);
@@ -17,6 +18,11 @@ class InsertQuery extends Query {
 
   public set(key: string, value: any) {
     this.insertValues[key] = value;
+    return this;
+  }
+
+  public returning(...keys: string[]) {
+    this.returningValues.push(...keys);
     return this;
   }
 
@@ -44,6 +50,10 @@ class InsertQuery extends Query {
       query += this.nextValue(this.insertValues[key]);
     }
     query += ")";
+
+    if (this.returningValues.length > 0) {
+      query += " RETURNING " + this.returningValues.map(v => helpers.clean(v)).join(", ");
+    }
 
     return {
       query,
