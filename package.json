@@ -1,6 +1,6 @@
 {
   "name": "queryb",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Simple javascript query builder",
   "main": "dist/qb.js",
   "types": "dist/qb.d.ts",
