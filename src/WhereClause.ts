@@ -54,7 +54,6 @@ class WhereClause {
   }
 
   public toString() {
-    console.log("Entries:", this.entries);
     if (this.entries.length < 1) return "";
 
     let result = "";
