@@ -12,7 +12,7 @@ describe('select query', () => {
   });
   it('should return a comma separated fieldslist when fields are given', () => {
     let {query, values} = qb.table("users").select(["id", "first_name"]).get();
-    expect(query).to.equal("SELECT id,first_name FROM users")
+    expect(query).to.equal(`SELECT "id","first_name" FROM users`)
   });
   it('should show single where clause when a single where clause is added', () => {
     let {query, values} = qb.table("users").select().where("id", 1).get();

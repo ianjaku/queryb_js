@@ -13,7 +13,7 @@ class SelectQuery extends Query {
   }
 
   public get() {
-    let query = `SELECT ${this.columns.join(",")} FROM ${this.table}`;
+    let query = `SELECT ${helpers.encapsulateColumns(this.columns).join(",")} FROM ${this.table}`;
     query += this.compileWheres();
 
     if (this.orderByValues.length > 0) {
