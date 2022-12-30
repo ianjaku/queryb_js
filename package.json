@@ -27,6 +27,6 @@
   "homepage": "https://github.com/invacto/queryb_js#readme",
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^6.2.2"
+    "mocha": "^10.2.0"
   }
 }
